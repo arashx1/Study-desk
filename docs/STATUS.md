@@ -179,3 +179,11 @@ Verification boundary: first structured-capture/chunk-retrieval build completed 
 ## First-time user review — 2026-11-04
 Fixed the backend startup probe failing when localhost is offline; launcher now prefers the project virtual environment. Evidence starts with source comparison, with optional writing links collapsed. Home offers a last-source and next-question handoff based on saved content, not an inferred claim about what the user learned.
 Remaining onboarding limitations: installation is manual (build + Load unpacked); AI requires Python dependencies, provider configuration and a running backend; PDF/restricted pages may not capture; preview storage differs from extension storage. Semantic retrieval sends bounded previews to the configured provider. Browser-extension interaction still needs live verification.
+
+## 2026-11-04 — Return-time source monitoring
+- Local watched-source checks run on return when the last check is over five minutes old, plus existing Chrome alarms. Explicit public article watches only; Google search/AI answers excluded.
+- Static article/main text is compared after ignoring common page chrome. No JS rendering or external changedetection.io service is configured. Baselines migrate without raising false change alerts on extraction upgrades.
+- Overlapping checks share one run. Registration writes merge newly added watches and honor removals; change records retain before/after text and monitor/workspace IDs. Failed, blocked, empty, oversized or unavailable pages retain the prior baseline.
+- Added focused tests for page chrome, whitespace, real edits and blocked/empty pages. Full privileged worker lifecycle, sleep/wake and network testing in Chrome remain manual acceptance work.
+
+2026-11-04: Moved watched-source monitoring to a dedicated Source updates sidebar section. Source picker opens by default when nothing is watched. Monitoring runs when that section is opened or via Chrome alarms.

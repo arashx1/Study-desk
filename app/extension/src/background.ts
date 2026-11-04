@@ -1,10 +1,13 @@
 import './autoSession';
+import {monitorText} from './monitorText';
 import { all, put } from './db';
 import { captureKey, isWebUrl } from './domain';
 chrome.alarms?.onAlarm.addListener(alarm=>{if(alarm.name==='reentry-monitor')void checkMonitors();});
 chrome.runtime.onStartup.addListener(()=>{void chrome.alarms?.create('reentry-monitor',{periodInMinutes:5});});
 chrome.runtime.onMessage.addListener((message,_sender,respond)=>{if(message?.type!=='check-watched-sources')return;void checkMonitors().then(()=>respond({ok:true})).catch(e=>respond({error:String(e)}));return true;});
-async function checkMonitors(){
+let monitorRun:Promise<void>|undefined;
+function checkMonitors(){if(!monitorRun)monitorRun=runMonitors().finally(()=>{monitorRun=undefined;});return monitorRun;}
+async function runMonitors(){
  const data=await chrome.storage.local.get(['pageMonitors','pageChanges']);
  const monitors=data.pageMonitors||[],changes=data.pageChanges||[];
  for(const m of monitors){try{
@@ -15,14 +18,14 @@ async function checkMonitors(){
    if(!(response.headers.get('content-type')||'').includes('text/html'))throw new Error('Only HTML public pages are supported.');
    const reader=response.body?.getReader();if(!reader)throw new Error('No page body.');let size=0,html='';const decoder=new TextDecoder();
    try{while(true){const part=await reader.read();if(part.done)break;size+=part.value.length;if(size>200000)throw new Error('Page exceeds the 200 KB monitoring limit.');html+=decoder.decode(part.value,{stream:true});}}finally{await reader.cancel();}
-   const text=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-   if(m.text&&m.text!==text)changes.push({id:crypto.randomUUID(),workspaceId:m.workspaceId,url:m.url,before:m.text,after:text,at:new Date().toISOString()});
-   m.text=text;m.checkedAt=new Date().toISOString();m.error='';
+   const text=monitorText(html);
+   if(m.extractionVersion===2&&m.text&&m.text!==text)changes.push({id:crypto.randomUUID(),monitorId:m.id,workspaceId:m.workspaceId,url:m.url,before:m.text,after:text,at:new Date().toISOString()});
+   m.text=text;m.extractionVersion=2;m.checkedAt=new Date().toISOString();m.error='';
  }catch(e){m.error=String(e);}}
  // Re-read registrations so a stop-monitor action cannot be undone by an in-flight check.
  const latest=await chrome.storage.local.get('pageMonitors');
  const ids=new Set((latest.pageMonitors||[]).map((m:any)=>m.id));
- await chrome.storage.local.set({pageMonitors:monitors.filter((m:any)=>ids.has(m.id)),pageChanges:changes.slice(-20)});
+ await chrome.storage.local.set({pageMonitors:(latest.pageMonitors||[]).map((m:any)=>monitors.find((checked:any)=>checked.id===m.id)||m),pageChanges:changes.filter((c:any)=>!c.monitorId||ids.has(c.monitorId)).slice(-100)});
 }
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.removeAll(() => chrome.contextMenus.create({ id: 'reentry-capture', title: "Save selection to Scholar's Desk", contexts: ['selection'], documentUrlPatterns: ['http://*/*','https://*/*'] }));
