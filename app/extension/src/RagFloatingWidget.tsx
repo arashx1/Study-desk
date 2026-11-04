@@ -1,6 +1,7 @@
+import {connectionError} from './backend';
 import React, { useState } from 'react';
 import { Sparkles, X, Send, ArrowUpRight, BookOpen, Bot } from 'lucide-react';
-import { retrieve } from './retrieve';
+import { retrieveHybrid } from './retrieve';
 import { hasEnoughTopicWords } from './textQuality';
 import type { Workspace, Passage } from './types';
 
@@ -40,7 +41,7 @@ export default function RagFloatingWidget({
     setError('');
     setRetrieved([]);
     try {
-      const evidence = retrieve(q, passages);
+      const evidence = await retrieveHybrid(q, passages,w.id);
       if (!evidence.length) {
         throw new Error('No matching scraped passages found yet. Browse more pages or try another query.');
       }
@@ -65,7 +66,7 @@ export default function RagFloatingWidget({
       localStorage.setItem(key, JSON.stringify(next));
       setQuestion('');
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(connectionError(e));
     } finally {
       setBusy(false);
     }

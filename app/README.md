@@ -48,3 +48,10 @@ The build script includes TypeScript checks and four domain tests.
 
 ## Automatic research sessions
 Reload Scholar's Desk after rebuilding. Open an ordinary webpage and choose Start session on the Home page. Approve optional HTTP/HTTPS site access only if you want automatic capture across research sites. This permission is broad, while capture is restricted by the visible session-tab list. Tabs opened from included tabs are included via their opener relationship; use Include current tab for other tabs. Exclude private pages before navigating them. Pause/Resume controls new captures and Finish capture stops the session. Navigate to Research to add a learning reflection and download the context report. HTML reports can be printed to PDF. Captured page text is bounded, may include layout text, and is not proof of understanding or correctness. Download reports before starting another session; previous report state is archived locally but no archive browser is implemented yet.
+
+### Reproducible extension build on Windows
+From the repository root, run `powershell -ExecutionPolicy Bypass -File scripts/build_extension.ps1`. It installs locked dependencies in a fresh temporary directory, checks TypeScript, runs the extension tests and copies the production bundle to `app/extension/dist`. This avoids locked OneDrive dependency directories. `-Offline` only works when all required packages are cached.
+
+After finishing a session, the report view attempts to generate and download its brief. If the backend is offline, start `scripts/start_backend.ps1` and use **Create and download report** to retry. The backend connection indicator checks reachability and key configuration, not provider quota or key validity.
+
+Research questions use local keyword matching plus optional model-based semantic source selection. Up to 24 candidate previews are sent to the configured answer provider; up to six selected excerpts are then used for the cited answer. Session/date/workspace filters apply before selection. This does not use a vector embedding index.

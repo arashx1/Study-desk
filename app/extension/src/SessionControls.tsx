@@ -82,7 +82,7 @@ export default function SessionControls({
       }
       if (action === 'finish') {
         const saved = JSON.parse(localStorage.getItem(key) || 'null');
-        if (saved) localStorage.setItem(key, JSON.stringify({ ...saved, endedAt: new Date().toISOString() }));
+        if (saved) {localStorage.setItem(key, JSON.stringify({ ...saved, endedAt: new Date().toISOString() }));if(saved.id)localStorage.setItem('reentry-auto-report',saved.id);}
       }
       window.dispatchEvent(new Event('reentry-session-change'));
       setNotice(action === 'finish' ? 'Session finished! Your research report is ready.' : 'Session updated.');

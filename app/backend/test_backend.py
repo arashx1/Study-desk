@@ -140,3 +140,15 @@ def test_web_search_missing_key_and_validation(client,monkeypatch):
     result=client.get('/api/web-search?q=research+claim')
     assert result.status_code==503
     assert result.json()['error']['code']=='search_not_configured'
+
+def test_semantic_selection_validates_workspace_and_ids(client,monkeypatch):
+    p={'workspaceId':'w1','question':'Which device runs instructions?','passages':payload()['passages']}
+    monkeypatch.setattr(main,'task_provider',lambda task:('test','test','https://example.org'))
+    async def valid(*args): return {'ids':['S2']}
+    monkeypatch.setattr(main,'provider_json',valid)
+    assert client.post('/api/retrieve',json=p).json()['ids']==['p2']
+    async def invalid(*args): return {'ids':['invented']}
+    monkeypatch.setattr(main,'provider_json',invalid)
+    assert client.post('/api/retrieve',json=p).status_code==502
+    p['passages'][0]['workspaceId']='other'
+    assert client.post('/api/retrieve',json=p).status_code==400
