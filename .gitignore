@@ -1,0 +1,29 @@
+# Secrets and local data
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db
+# Dependencies and builds
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+dist/
+build/
+.next/
+*.tsbuildinfo
+# Generated resources and setup backups
+tmp/
+output/
+.setup-backups/
+# Test/editor noise
+coverage/
+playwright-report/
+test-results/
+*.log
+.DS_Store
+Thumbs.db
+
+app/backend/vendor/

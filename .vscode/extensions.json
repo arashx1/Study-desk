@@ -1,0 +1,33 @@
+{
+  "recommendations": [
+    // Essential for TypeScript + React development
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next",
+    "christian-kohler.path-intellisense",
+
+    // Git workflow
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+
+    // Code quality
+    "usernamehw.errorlens",
+    "streetsidesoftware.code-spell-checker",
+    "aaron-bond.better-comments",
+
+    // API testing (useful for backend work)
+    "humao.rest-client",
+
+    // Markdown editing (for docs/ files)
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+
+    // Remote development (WSL)
+    "ms-vscode-remote.remote-wsl",
+    "ms-vscode-remote.vscode-remote-extensionpack",
+
+    // Import organization
+    "naumovs.color-highlight"
+  ]
+}
