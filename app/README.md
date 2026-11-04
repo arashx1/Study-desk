@@ -1,5 +1,7 @@
 # Scholar's Desk application
 
+For current installation instructions, features, privacy and limitations, start with the [project README](../README.md). Scholar's Desk was originally named ReEntry; internal paths and storage keys retain that name.
+
 ## Run from the workspace root in PowerShell
 
 The prebuilt extension is in `app/extension/dist`. To rebuild:
@@ -10,7 +12,7 @@ The prebuilt extension is in `app/extension/dist`. To rebuild:
 
 The script installs locked Node dependencies in a fresh temporary directory, type-checks, builds, runs domain tests and copies the bundle back. This avoids this workspace's node_modules write restriction. Temporary build files remain available for debugging.
 
-Backend dependencies were already available on this computer. To start it here:
+After installing the backend dependencies below, start it from the repository root:
 
 ```powershell
 .\scripts\start_backend.ps1
@@ -32,12 +34,12 @@ Health: http://127.0.0.1:8765/health. Optional preview: run `.\scripts\start_pre
 3. Choose the complete `app/extension/dist` directory.
 4. Pin Scholar's Desk and click its toolbar action to open the side panel.
 5. Create a workspace. Select webpage body text, right-click and choose Save selection to Scholar's Desk.
-6. Add task tabs individually with Save current tab; approve the page-specific permission when appropriate. Restore tabs reuses matching URLs and leaves unrelated tabs open.
+6. Start a capture session to collect supported pages automatically. Pause or exclude pages you do not want saved. Restoring saved pages reuses matching URLs and leaves unrelated tabs open.
 
 PDF viewers, browser-internal pages, arbitrary rich editors and exact restoration after page redesign are unsupported. Saved passages remain available offline.
 
 ## Optional AI
-Manual review needs no key. The AI comparison uses an OpenAI-compatible HTTPS chat-completions endpoint. Set MODEL_API_KEY, MODEL_NAME and optionally MODEL_BASE_URL in the backend terminal environment before starting it. See backend/.env.example; it is not automatically loaded. Never put keys into extension files or VITE_* variables. No real provider call has been verified.
+Manual review needs no key. Configure MODEL_API_KEY, MODEL_NAME and MODEL_BASE_URL in backend/.env or the terminal environment before starting the service. The backend loads its local .env; explicit environment variables take precedence. See backend/.env.example for placeholder configuration. Never put keys into extension files or VITE_* variables. Provider availability and quota must be checked with your account.
 
 The example workspace contains invented benchmark passages. Backend fixture URLs: `/fixtures/desktop`, `/fixtures/mobile`, `/fixtures/scope`. Test model fixtures are not live output.
 
